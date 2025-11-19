@@ -19,13 +19,17 @@ export const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: "hero/1",
+        path: "hero/:idSlug",
         element: <HeroPage />,
       },
       {
         path: "search",
         element: <SearchPage />,
       },
+      {
+        path: '*',
+        element: <h1 className="text-center text-6xl text-red-600">NOT FOUND 404</h1>
+      }
     ],
   },
 
