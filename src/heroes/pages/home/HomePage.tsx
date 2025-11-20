@@ -23,6 +23,8 @@ export const HomePage = () => {
   let activeTab = searchParams.get("tab") || "all";
   const page = searchParams.get("page") ?? '1';
   const limit = searchParams.get("limit") ?? '6'
+  const category = searchParams.get("category") ?? 'all'
+
 
   const validTab = useMemo(() => {
     const validsTab = ["all", "favorites", "heroes", "villians"];
@@ -34,7 +36,7 @@ export const HomePage = () => {
     getHeroesByPage().then((heroes) => {console.log({heroes})})
   }, []) */
 
-  const { data: heroesResponse } = useHeroes(+page, +limit);
+  const { data: heroesResponse } = useHeroes(+page, +limit, category);
 
   const { summary } = useSummary();
 
@@ -56,6 +58,8 @@ export const HomePage = () => {
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="all" onClick={() => setSearchParams((prev) => {
               prev.set('tab', 'all')
+              prev.set('category', 'all')
+              prev.set('page', '1')
               return prev
             })}>
               All Characters ({summary?.totalHeroes})
@@ -72,6 +76,10 @@ export const HomePage = () => {
             </TabsTrigger>
             <TabsTrigger value="heroes" onClick={() => setSearchParams((prev) => {
               prev.set('tab', 'heroes')
+              prev.set('category', 'hero')
+              prev.set('page', '1')
+
+
               return prev
             })}>
               Heroes ({summary?.heroCount})
@@ -80,6 +88,10 @@ export const HomePage = () => {
               value="villains"
               onClick={() => setSearchParams((prev) => {
                 prev.set('tab', 'villians')
+                prev.set('category', 'villain')
+
+                prev.set('page', '1')
+
                 return prev
               })}
             >

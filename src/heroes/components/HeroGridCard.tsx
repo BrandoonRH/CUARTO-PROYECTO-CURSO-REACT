@@ -14,15 +14,15 @@ export const HeroGridCard = ({ hero }: Props) => {
 
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    navigate(`/hero/1`)
+  const handleClick = (slug: string) => {
+    navigate(`/hero/${slug}`)
   }
 
   return (
     <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-linear-to-r from-white to-gray-50">
       <div className="relative h-64 ">
         <img
-          onClick={handleClick}
+          onClick={() => handleClick(hero.slug)}
           src={hero.image}
           alt={hero.name}
           className="object-cover transition-all duration-500 group-hover:scale-110"
