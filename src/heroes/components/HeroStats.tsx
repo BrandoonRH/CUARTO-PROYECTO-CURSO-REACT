@@ -3,11 +3,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, Trophy, Users, Zap } from "lucide-react";
 import { HeroStatCard } from "./HeroStatCard";
 import { useSummary } from "../hooks/useSummary";
+import { use} from "react";
+import { FavoriteHeroContext } from "../context/FavoriteHeroContext";
 
 export const HeroStats = () => {
 
   const { summary } = useSummary();
-  return (
+  const {favoriteCount} = use(FavoriteHeroContext); 
+ 
+
+  if(summary) return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -33,8 +38,10 @@ export const HeroStats = () => {
         icon={<Heart className="h-4 w-4 text-muted-foreground" />}
         title="Favorites"
       >
-        <div className="text-2xl font-bold text-red-600">3</div>
-        <p className="text-xs text-muted-foreground">18.8% of total</p>
+        <div className="text-2xl font-bold text-red-600">{favoriteCount}</div>
+        <p className="text-xs text-muted-foreground">
+          {((favoriteCount / summary?.totalHeroes) * 100).toFixed(2)} total
+        </p>
       </HeroStatCard>
 
       <HeroStatCard
