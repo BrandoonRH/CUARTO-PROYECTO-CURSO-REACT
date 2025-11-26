@@ -3,7 +3,7 @@ import { getSummaryAction } from "../actions/get-summary.action";
 
 export const useSummary = () => {
 
-    const { data: summary, isError, isLoading } = useQuery({
+    const { data: summary, isError, isLoading, error } = useQuery({
         queryKey: ['summary-information'],
         queryFn: getSummaryAction,
         staleTime: 1000 * 60 * 5
@@ -12,6 +12,7 @@ export const useSummary = () => {
     return {
         summary,
         isError,
-        isLoading
+        isLoading, 
+        error
     }
 }
