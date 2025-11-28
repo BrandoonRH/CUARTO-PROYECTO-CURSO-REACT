@@ -94,8 +94,6 @@ Si una petición con `useQuery` falla porque el recurso no existe (error **404**
 
 ---
 
-¡Por supuesto! Aquí tienes el cuestionario de la Sección 15 con formato Markdown.
-
 # Cuestionario Sección 15
 
 ---
@@ -187,5 +185,113 @@ Si una petición con `useQuery` falla porque el recurso no existe (error **404**
 
 * **Respuesta Correcta:** El código se vuelve más **reutilizable y fácil de probar**, y los componentes se centran solo en la **presentación (UI)**, sin mezclarse con la lógica de obtención de datos.
 * **Explicación:** Este es un principio de diseño de *software* conocido como "**Separación de Responsabilidades**". El componente se encarga de mostrar la UI y manejar la interacción, mientras que la acción se encarga exclusivamente de la comunicación con la API. Esto hace que cada parte sea más simple y fácil de mantener.
+
+---
+
+# Cuestionario Sección 16
+
+# 📜 Cuestionario: Pruebas de React con Testing Library
+
+Este cuestionario cubre conceptos fundamentales sobre cómo probar componentes y *hooks* de React de manera efectiva utilizando React Testing Library y librerías complementarias.
+
+---
+
+## 1. 🌐 Contexto de Navegación
+
+**Pregunta 1:** Al probar un componente que utiliza *hooks* de React Router (como `useParams` o `useSearchParams`), ¿por qué es fundamental usar un `MemoryRouter` en el entorno de prueba en lugar del `BrowserRouter` que se usa en la aplicación principal?
+
+* **Respuesta Correcta:** Porque `BrowserRouter` depende de la API de Historial del navegador, que no existe en el entorno de JSDOM donde se ejecutan las pruebas. `MemoryRouter` simula la navegación en memoria.
+
+> **✅ Correcto:** JSDOM es un entorno de Node.js que simula el DOM, pero no incluye todas las APIs del navegador como la de Historial (para manipular la barra de direcciones). `MemoryRouter` fue diseñado específicamente para estos entornos, manejando el historial de rutas de forma interna y en memoria.
+
+---
+
+## 2. ⚡️ Pruebas Asíncronas y Estado Global
+
+**Pregunta 2:** Al intentar probar un *custom hook* que utiliza TanStack Query (como `useHeroSummary`), se produce un error "No QueryClient set". ¿Cuál es la solución correcta para este problema en el entorno de pruebas?
+
+* **Respuesta Correcta:** Envolver el *hook* durante la prueba con un `QueryClientProvider` utilizando la opción `wrapper` de la función `renderHook`.
+
+> **✅ Correcto:** Al igual que en la aplicación, cualquier *hook* de TanStack Query necesita un `QueryClient` disponible en el contexto. La opción `wrapper` de `renderHook` permite proporcionar este y otros proveedores necesarios para que el *hook* bajo prueba funcione correctamente.
+
+---
+
+## 3. ⏱️ Manejo de Asincronía
+
+**Pregunta 3:** ¿Cuál es el propósito principal de la función `waitFor` de React Testing Library al probar lógica asíncrona?
+
+* **Respuesta Correcta:** Esperar a que una aserción deje de lanzar un error, reintentándola varias veces hasta que se cumpla o se agote el tiempo.
+
+> **✅ Correcto:** `waitFor` es la herramienta clave para manejar actualizaciones de estado que no son inmediatas. Se usa para esperar a que el resultado de una operación asíncrona (como una petición de API) se refleje en el DOM antes de hacer las aserciones finales.
+
+---
+
+## 4. 🧩 Aislamiento y Mocks
+
+**Pregunta 4:** Al probar un componente complejo como `HomePage`, ¿por qué es una buena práctica hacer un "**mock**" de sus *custom hooks* hijos (ej. `usePaginatedHero`) en lugar de usar sus implementaciones reales?
+
+* **Respuesta Correcta:** Para **aislar la prueba**. El objetivo es probar la lógica del `HomePage` en sí, no volver a probar la lógica interna de los *hooks*, ya que estos tienen sus propias pruebas dedicadas.
+
+> **✅ Correcto:** Esta es la esencia de las pruebas de integración y unitarias. Cada pieza de lógica (cada *hook*, cada componente) debe tener sus propias pruebas. Al probar `HomePage`, asumimos que los *hooks* que consume ya funcionan (porque sus propias pruebas lo garantizan) y nos centramos en si `HomePage` los llama correctamente y utiliza sus resultados de la manera esperada.
+
+---
+
+## 5. 🗃️ Pruebas de Contexto
+
+**Pregunta 5:** Para probar la funcionalidad de un Contexto de React (como el `FavoriteHeroContext`), ¿cuál es la estrategia más efectiva?
+
+* **Respuesta Correcta:** Renderizar el **Provider** con un componente "**consumidor**" de prueba como hijo. Este consumidor expone el estado y los métodos del contexto al DOM, donde pueden ser evaluados por Testing Library.
+
+> **✅ Correcto:** Esta estrategia permite probar el contexto desde la perspectiva de un componente que lo consume, que es exactamente cómo se usará en la aplicación. El componente de prueba actúa como un "espía" que nos muestra lo que está pasando dentro del contexto.
+
+---
+
+## 6. 🔎 Selectores de RTL
+
+**Pregunta 6:** ¿Cuál es la diferencia fundamental entre `getByTestId` y `queryByTestId` en React Testing Library y cuándo se debe usar `queryBy`?
+
+* **Respuesta Correcta:** `getByTestId` lanza un error si no encuentra el elemento, mientras que `queryByTestId` devuelve `null`. Se debe usar `queryBy` cuando se quiere afirmar que un elemento **no está** en el DOM.
+
+> **✅ Correcto:** Esta es la distinción clave. Usa `getBy...` cuando esperas que el elemento esté presente (la prueba debe fallar si no lo está). Usa `queryBy...` cuando la **ausencia** del elemento es el resultado esperado de tu prueba.
+
+---
+
+## 7. 🖱️ Mejor Práctica en Interacciones
+
+**Pregunta 7:** ¿**Verdadero o Falso**?: Al probar el `CustomPagination`, la mejor manera de verificar que un clic en un botón de página funciona es haciendo un "**mock**" del *hook* `useSearchParams` y afirmando que su función `set` fue llamada.
+
+* **Respuesta:** **Falso**
+
+> **✅ Correcto:** Una prueba mucho mejor y más robusta es probar el **comportamiento observable por el usuario**. En este caso, se simula el clic y luego se afirma que la UI ha cambiado como resultado (ej. el botón que antes estaba activo ahora no lo está, y el nuevo botón sí). Esto confirma que el mecanismo interno (la llamada a `setSearchParams`) funcionó, **sin acoplar la prueba a los detalles de implementación de la librería**.
+
+---
+
+## 8. 🌎 Mocking de Objetos Globales
+
+**Pregunta 8:** ¿Cuál es una razón válida para hacer un "**mock**" de un objeto global como `window.localStorage` en lugar de usar la implementación que provee JSDOM?
+
+* **Respuesta Correcta:** Para tener **control total** sobre sus métodos (`getItem`, `setItem`), poder **espiar las llamadas** (`toHaveBeenCalledWith`) y simular escenarios donde el `localStorage` está vacío o tiene datos pre-cargados, sin que las pruebas se afecten entre sí.
+
+> **✅ Correcto:** Hacer un "**mock**" del `localStorage` nos da un control preciso. Nos permite verificar que `setItem` fue llamado con los datos correctos o configurar `getItem` para que devuelva un estado específico al inicio de una prueba, asegurando que los *tests* sean predecibles y aislados.
+
+---
+
+## 9. 🐌 Carga Perezosa (*Lazy Loading*)
+
+**Pregunta 9:** Al probar un componente que carga contenido de forma perezosa (`React.lazy`), ¿por qué es necesario usar un selector asíncrono como `await screen.findByText(...)` en lugar de uno síncrono como `screen.getByText(...)`?
+
+* **Respuesta Correcta:** Porque el componente no se renderiza de inmediato. La prueba necesita **esperar a que la promesa del componente *lazy* se resuelva** y el componente se renderice en el DOM antes de poder buscar elementos dentro de él.
+
+> **✅ Correcto:** La carga de un componente *lazy* es una operación asíncrona. Cuando el *render* inicial ocurre, el componente aún no está allí. `findBy...` combina `getBy...` con `waitFor`, esperando a que el elemento aparezca en el DOM antes de continuar con la aserción.
+
+---
+
+## 10. 🔄 Verificación de Flujo de Interacción
+
+**Pregunta 10:** Cuando se prueba el `SearchControls`, se simula un `fireEvent.change` en el *input* seguido de un `fireEvent.keyDown` con la tecla "Enter". ¿Qué se afirma después de estos eventos para verificar que la interacción funcionó?
+
+* **Respuesta Correcta:** Se afirma que el `value` del *input* en el DOM ha cambiado al nuevo valor, como resultado de que el `keyDown` actualizó el URL y el componente se volvió a renderizar con un nuevo `defaultValue`.
+
+> **✅ Correcto:** Este es el flujo completo de una interacción con un componente no controlado que está sincronizado con el URL. La prueba simula la acción del usuario y luego verifica el **resultado visible en la UI** después de que el ciclo de actualización se completa.
 
 ---

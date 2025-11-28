@@ -16,12 +16,12 @@ export const CustomPagination = ({ totalPages }: Props) => {
   const page = isNaN(+queryPage) ? 1 : +queryPage;
 
 
-const handlePageChange = (page: number) => {
-  if(page < 1 || page > totalPages) return;
-  searchParams.set('page', page.toString());
-  setSearchParams(searchParams);
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    searchParams.set('page', page.toString());
+    setSearchParams(searchParams);
 
-}
+  }
   return (
     <div className="flex items-center justify-center space-x-2">
       <Button variant="outline" size="sm" disabled={page === 1} onClick={() => handlePageChange(page - 1)}>
@@ -34,6 +34,7 @@ const handlePageChange = (page: number) => {
           key={index}
           variant={page === index + 1 ? 'default' : 'outline'}
           size="sm"
+          onClick={() => handlePageChange(index + 1)}
         >
           {index + 1}
         </Button>
